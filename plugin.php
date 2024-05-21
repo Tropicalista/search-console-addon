@@ -9,23 +9,26 @@
  * Author URI:  https://www.francescopepe.com
  * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- *
  */
 
 namespace Search_Console_JSON;
 
 defined( 'ABSPATH' ) || exit;
 
-
+/**
+ * Register route
+ *
+ * @return void
+ */
 function register_routes() {
 	register_rest_route(
 		'searchconsole/v1',
 		'/json_data',
 		array(
-			'methods'  => \WP_REST_Server::READABLE,
-			'callback' => __NAMESPACE__ . '\get_data',
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => __NAMESPACE__ . '\get_data',
 			'args'                => array(
-				'site' => array(
+				'site'      => array(
 					'type'              => 'string',
 					'required'          => true,
 					'sanitize_callback' => 'sanitize_text_field',
@@ -35,13 +38,13 @@ function register_routes() {
 					'required'          => true,
 					'sanitize_callback' => 'sanitize_text_field',
 				),
-				'endDate' => array(
+				'endDate'   => array(
 					'type'              => 'string',
 					'required'          => true,
 					'sanitize_callback' => 'sanitize_text_field',
 				),
 			),
-			'permission_callback' => function ($request) {
+			'permission_callback' => function ( $request ) {
 				$headers     = $request->get_headers();
 				$auth_header = $headers['authorization'][0];
 
@@ -57,27 +60,33 @@ function register_routes() {
 				return current_user_can( 'manage_options' );
 			},
 		)
-	);	
+	);
 }
 
+/**
+ * Get data
+ *
+ * @param WP_REST_REQUEST $request The request.
+ * @return mixed
+ */
 function get_data( $request ) {
-	$site  = $request->get_param( 'site' );
-	$startDate  = $request->get_param( 'startDate' );
-	$endDate  = $request->get_param( 'endDate' );
-	$api = new \Search_Console\Api();
-	$token = $api->get_access_token();
+	$site       = $request->get_param( 'site' );
+	$start_date = $request->get_param( 'startDate' );
+	$end_date   = $request->get_param( 'endDate' );
+	$api        = new \Search_Console\Api();
+	$token      = $api->get_access_token();
 
-	if( ! $site || ! $token ){
-        return new \WP_REST_Response( array( 'message' => 'Something wrong..' ), 400 );
+	if ( ! $site || ! $token ) {
+		return new \WP_REST_Response( array( 'message' => 'Something wrong..' ), 400 );
 	}
 
 	$url = "https://content-searchconsole.googleapis.com/webmasters/v3/sites/$site/searchAnalytics/query?fields=rows&alt=json";
 
 	$data = array(
 		'dimensions' => array( 'QUERY' ),
-		'startDate' => $startDate,
-		'endDate' => $endDate,
-		'type' => 'web',
+		'startDate'  => $start_date,
+		'endDate'    => $end_date,
+		'type'       => 'web',
 	);
 
 	$args = array(
@@ -100,8 +109,7 @@ function get_data( $request ) {
 	// Decode response body.
 	$response = json_decode( $response['body'], true );
 
-    return new \WP_REST_Response( $response, 200 );
-
+	return new \WP_REST_Response( $response, 200 );
 }
 
 add_action( 'rest_api_init', __NAMESPACE__ . '\register_routes' );
