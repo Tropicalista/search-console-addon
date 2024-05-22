@@ -21,3 +21,10 @@ Simply make a post request to /wp-json/searchconsole/v1/json_data and passing th
 You must also send an authorization header with username:password.
 
 Please create an application password to access this from outside.
+
+```
+fetch('http://localhost:10005/wp-json/searchconsole/v1/json_data?site=MYSITE&startDate=2024-05-01&endDate=2024-05-20', {method:'GET', 
+headers: {'Authorization': 'Basic ' + btoa('admin:XXXX XXXX XXXX XXXX XXXX')}})
+.then(response => response.json())
+.then(json => console.log(json));
+```
