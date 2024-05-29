@@ -70,13 +70,6 @@ function get_data( $request ) {
 
 	$url = "https://content-searchconsole.googleapis.com/webmasters/v3/sites/$site/searchAnalytics/query?fields=rows&alt=json";
 
-	$data = array(
-		'dimensions' => array( 'QUERY' ),
-		'startDate'  => $start_date,
-		'endDate'    => $end_date,
-		'type'       => 'web',
-	);
-
 	$args = array(
 		'method'  => 'POST',
 		'headers' => array(
