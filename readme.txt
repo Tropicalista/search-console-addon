@@ -23,8 +23,18 @@ You must also send an authorization header with username:password.
 Please create an application password to access this from outside.
 
 ```
-fetch('http://localhost:10005/wp-json/searchconsole/v1/json_data?site=MYSITE&startDate=2024-05-01&endDate=2024-05-20', {method:'GET', 
-headers: {'Authorization': 'Basic ' + btoa('admin:XXXX XXXX XXXX XXXX XXXX')}})
+fetch('http://localhost:10005/wp-json/searchconsole/v1/json_data?site=MYSITE', {
+	method: 'POST', 
+	headers: { 
+		'Authorization': 'Basic ' + btoa('admin:XXXX XXXX XXXX XXXX XXXX')
+	},
+	body: JSON.stringify({
+		startDate: '2024-05-01',
+		endDate: '2024-05-21',
+		dimensions: ['QUERY'],
+		type: 'web'
+	})
+})
 .then(response => response.json())
 .then(json => console.log(json));
 ```
