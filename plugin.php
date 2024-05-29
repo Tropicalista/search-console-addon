@@ -25,20 +25,10 @@ function register_routes() {
 		'searchconsole/v1',
 		'/json_data',
 		array(
-			'methods'             => \WP_REST_Server::READABLE,
+			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => __NAMESPACE__ . '\get_data',
 			'args'                => array(
 				'site'      => array(
-					'type'              => 'string',
-					'required'          => true,
-					'sanitize_callback' => 'sanitize_text_field',
-				),
-				'startDate' => array(
-					'type'              => 'string',
-					'required'          => true,
-					'sanitize_callback' => 'sanitize_text_field',
-				),
-				'endDate'   => array(
 					'type'              => 'string',
 					'required'          => true,
 					'sanitize_callback' => 'sanitize_text_field',
@@ -71,8 +61,6 @@ function register_routes() {
  */
 function get_data( $request ) {
 	$site       = $request->get_param( 'site' );
-	$start_date = $request->get_param( 'startDate' );
-	$end_date   = $request->get_param( 'endDate' );
 	$api        = new \Search_Console\Api();
 	$token      = $api->get_access_token();
 
@@ -96,7 +84,7 @@ function get_data( $request ) {
 			'Authorization' => 'Bearer ' . $token,
 			'Content-Type'  => 'application/json',
 		),
-		'body'    => wp_json_encode( $data ),
+		'body'    => $request->get_body(),
 	);
 
 	$response = wp_remote_request( $url, $args );
